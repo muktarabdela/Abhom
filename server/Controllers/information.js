@@ -1,10 +1,15 @@
-const { default: mongoose } = require('mongoose')
 const InformationSchema = require('../Database/models/Information')
 const { StatusCodes } = require('http-status-codes')
+const User = require('../Database/models/User')
+const infoNotification = require('../Utils/notifications/infoNotifications')
 
 const createInformation = async ( req, res) => {
     try {
         const information = await InformationSchema.create({...req.body})
+        const allUsers = await User.find({})
+        allUsers.forEach(user => {
+            infoNotification(user.deviceToken, information)
+        })
         res.status(StatusCodes.CREATED).json({msg: 'information created successfully', information})
     } catch (error) {
         console.error(error);

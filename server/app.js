@@ -12,6 +12,7 @@ const appointmentRouters = require('./Routes/appointments')
 const favoriteRoutes = require('./Routes/favorites')
 const informationsRoutes = require('./Routes/information')
 const searchRoute = require('./Routes/search')
+const adNotificationRoute = require('./Routes/adNotifications')
 
 
 // middleware
@@ -47,6 +48,8 @@ app.use('/abhom-api/v1', authMiddleware, appointmentRouters)
 app.use('/abhom-api/v1', authMiddleware, favoriteRoutes)
 app.use('/abhom-api/v1', authMiddleware, informationsRoutes)
 app.use('/abhom-api/v1', authMiddleware, searchRoute)
+app.use('/abhom-api/v1', authMiddleware, adNotificationRoute)
+
 
 app.use(errorHandlerMiddleware)
 app.use(notFound)
