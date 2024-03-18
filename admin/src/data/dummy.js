@@ -28,7 +28,8 @@ export const gridOrderImage = (props) => (
     <img
       className="rounded-xl h-20 md:ml-3"
       src={props.ProductImage}
-      alt="order-item"/>
+      alt="order-item"
+    />
   </div>
 );
 
@@ -473,7 +474,7 @@ export const links = [
     title: 'Dashboard',
     links: [
       {
-        name: 'ecommerce',
+        name: 'dashboard',
         icon: <FiShoppingBag />,
       },
     ],
@@ -483,7 +484,7 @@ export const links = [
     title: 'Pages',
     links: [
       {
-        name: 'orders',
+        name: 'appointments',
         icon: <AiOutlineShoppingCart />,
       },
       {
