@@ -38,7 +38,7 @@ const saveFavoriteProperty = async (req, res) => {
 const getFavoriteProperties = async (req, res) => {
     try {
         const savedProperties = await FavoriteProperty.find({})
-            //.populate('propertyId');
+        //.populate('propertyId');
         res.status(StatusCodes.OK).json({ savedProperties });
     } catch (error) {
         console.error('Error in getSavedProperties:', error);
@@ -51,7 +51,7 @@ const getFavoritePropertyById = async (req, res) => {
     try {
         const { id } = req.params;
         const savedProperty = await FavoriteProperty.find({ userId: id })
-            //.populate('propertyId');
+        //.populate('propertyId');
         if (!savedProperty) {
             return res.status(StatusCodes.NOT_FOUND).json({ msg: 'Saved property not found' });
         }

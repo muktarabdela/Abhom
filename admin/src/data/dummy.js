@@ -1,6 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { FaBuilding } from "react-icons/fa6";
+import { CgHello } from "react-icons/cg"
+import { FaRegNewspaper, FaTrash, FaEdit } from "react-icons/fa";
 import { AiOutlineCalendar, AiOutlineShoppingCart, AiOutlineAreaChart, AiOutlineBarChart, AiOutlineStock } from 'react-icons/ai';
-import { FiShoppingBag, FiEdit, FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart } from 'react-icons/fi';
+import { FiShoppingBag, FiEdit, FiPieChart, FiBarChart, FiCreditCard, FiStar, FiShoppingCart, FiMessageSquare, FiSave } from 'react-icons/fi';
 import { BsKanban, BsBarChart, BsBoxSeam, BsCurrencyDollar, BsShield, BsChatLeft } from 'react-icons/bs';
 import { BiColorFill } from 'react-icons/bi';
 import { IoMdContacts } from 'react-icons/io';
@@ -22,44 +25,453 @@ import product5 from './product5.jpg';
 import product6 from './product6.jpg';
 import product7 from './product7.jpg';
 import product8 from './product8.jpg';
+import { useStateContext } from '../contexts/ContextProvider';
+import { Modal } from '../components';
+import { updateAppointment, deleteAppointment } from '../api/appointmentApi'
+
 
 export const gridOrderImage = (props) => (
   <div>
     <img
       className="rounded-xl h-20 md:ml-3"
-      src={props.ProductImage}
+      src={props.images[0]}
+      alt="order-item"
+    />
+  </div>
+);
+export const gridUserImage = (props) => (
+  <div>
+    <img
+      className="rounded-xl h-20 md:ml-3"
+      src={props.image}
       alt="order-item"
     />
   </div>
 );
 
-export const gridOrderStatus = (props) => (
+//appointment user detail template to show the user details
+export const gridUserDetails = (props) => {
+  const { user, setUser } = useStateContext()
+  return (
+    <button
+      type="button"
+      onClick={(() => { setUser({ isOpen: true, modalId: props.userId }) })}
+      style={{ background: "orange" }}
+      className="text-white py-1 px-2 capitalize rounded-2xl text-md"
+    >
+      Show
+    </button>
+  )
+}
+
+// properties
+export const gridPropertyDetails = (props) => {
+  const { property, setProperty } = useStateContext()
+  return (
+    <button
+      type="button"
+      onClick={(() => { setProperty({ isOpen: true, propertyId: props._id }) })}
+      style={{ background: "red" }}
+      className="text-white py-1 px-2 capitalize rounded-2xl text-md"
+    >
+      Show
+    </button>
+  )
+}
+export const GridPropertyAdd = (props) => {
+  const { setAddPropertyModal, setConfirm } = useStateContext()
+  return (
+    <div className='text-right relative bottom-[2.5em] '
+      onClick={() => { setAddPropertyModal({ isOpen: true }); setConfirm({ action: "ADD", modalType: "property", id: props._id }) }} style={{ background: "" }}
+    >
+      <button
+        type="button"
+        className=" items-center gap-5 pl-4 p-3 pb-2.5 rounded-lg  text-white bg-green-500 text-md m-2" >
+        Add Property
+      </button>
+    </div>
+  )
+}
+export const deleteProperty = (props) => {
+  const { setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => setConfirm({ modalIsOpen: true, id: props._id, action: "Delete", modalType: "property" })}
+      style={{ background: "tan" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaTrash />
+    </button>
+  )
+};
+export const updateProperty = (props) => {
+  const { setPropertyModal, setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => { setPropertyModal({ isOpen: true }); setConfirm({ action: "Update", modalType: "property", id: props._id }) }}
+      style={{ background: "purple" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaEdit />
+    </button>
+  )
+};
+
+export const propertyGrid = [
+  {
+    template: gridPropertyDetails,
+    headerText: 'Property',
+    width: '150',
+    textAlign: 'Center',
+  },
+  {
+    field: '_id',
+    headerText: 'ID',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+  },
+  {
+    headerText: 'Image',
+    template: gridOrderImage,
+    textAlign: 'Center',
+    width: '120',
+  },
+  {
+    field: 'location',
+    headerText: 'Location',
+    width: '150',
+    editType: 'dropdownedit',
+    textAlign: 'Center',
+  },
+  {
+    field: 'price',
+    headerText: 'Price',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+  },
+  {
+    field: 'size',
+    headerText: 'Size',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+  },
+  {
+    field: 'type',
+    headerText: 'type',
+    width: '120',
+    textAlign: 'Center',
+    hight: '200',
+  },
+  {
+    headerText: 'Delete',
+    width: '80',
+    template: deleteProperty,
+    textAlign: 'Center'
+  },
+  {
+    headerText: 'Update',
+    width: '80',
+    template: updateProperty,
+    textAlign: 'Center'
+  }
+];
+// #########################
+
+// Appointment
+export const gridAppointmentStatus = (props) => (
   <button
     type="button"
-    style={{ background: props.StatusBg }}
+    style={props.status === "scheduled" ? { background: "#8BE78B" } : { backgroundColor: "red" }}
     className="text-white py-1 px-2 capitalize rounded-2xl text-md"
   >
-    {props.Status}
+    {props.status}
   </button>
 );
 
+export const deleAppointment = (props) => {
+  const { setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => setConfirm({ modalIsOpen: true, id: props._id, action: "Delete", modalType: "Appointment" })}
+      style={{ background: "tan" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaTrash />
+    </button>
+  )
+};
+
+export const updAppointment = (props) => {
+  const { setAppointmentModal, setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => { setAppointmentModal({ isOpen: true }); setConfirm({ action: "Update", modalType: "Appointment", id: props._id }) }}
+      style={{ background: "purple" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaEdit />
+    </button>
+  )
+};
+export const appointmentsGrid = [
+  {
+    headerText: 'User',
+    width: '150',
+    template: gridUserDetails,
+    textAlign: 'Center'
+  },
+  {
+    template: gridPropertyDetails,
+    headerText: 'Property',
+    width: '150',
+    textAlign: 'Center',
+  },
+  {
+    field: 'appointedTime',
+    headerText: 'Appointment Date',
+    width: '170',
+    textAlign: 'Center',
+  },
+  {
+    headerText: 'Status',
+    width: '120',
+    textAlign: 'Center',
+    template: gridAppointmentStatus
+  },
+  {
+    headerText: 'Delete',
+    width: '80',
+    template: deleAppointment,
+    textAlign: 'Center'
+  },
+  {
+    headerText: 'Update',
+    width: '80',
+    template: updAppointment,
+    textAlign: 'Center'
+  }
+];
+// #####################
+
+// user
+export const gridUserStatus = (props) => (
+  <button
+    type="button"
+    style={props.status === "Active" ? { background: "#8BE78B" } : { backgroundColor: "red" }}
+    className="text-white py-1 px-2 capitalize rounded-2xl text-md"
+  >
+    {props.status}
+  </button>
+);
+
+const gridOpenModal = (props) => {
+  const { userModal, setUserModal } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={(() => setUserModal({ isOpen: !userModal.isOpen, modalData: props }))}
+      style={{ background: "lightblue" }}
+      className="text-white py-1 px-2 capitalize rounded-2xl text-md"
+    >
+      Show
+    </button>
+  );
+};
+export const userGrid = [
+  {
+    headerText: 'Image',
+    template: gridUserImage,
+    textAlign: 'Center',
+    width: '120',
+  },
+  {
+    field: 'fullname',
+    headerText: 'Full Name',
+    width: '150',
+    editType: 'dropdownedit',
+    textAlign: 'Center',
+  },
+  {
+    field: 'username',
+    headerText: 'User Name',
+    width: '120',
+    textAlign: 'Center',
+  },
+  {
+    field: 'phone',
+    headerText: 'Phone Number',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+  },
+  {
+    field: 'email',
+    headerText: 'Email',
+    width: '170',
+    textAlign: 'Center',
+  },
+  {
+    headerText: 'Status',
+    template: gridUserStatus,
+    field: 'status',
+    textAlign: 'Center',
+    width: '120',
+  },
+  {
+    headerText: 'Details',
+    width: '120',
+    template: gridOpenModal,
+    textAlign: 'Center',
+  },
+];
+
+// information
+export const gridInfoDetails = (props) => {
+  const { info, setInfo } = useStateContext()
+  return (
+    <button
+      type="button"
+      onClick={(() => { setInfo({ isOpen: true, infoId: props._id }) })}
+      style={{ background: "red" }}
+      className="text-white py-1 px-2 capitalize rounded-2xl text-md"
+    >
+      Show
+    </button>
+  )
+}
+export const deleteInfo = (props) => {
+  const { setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => setConfirm({ modalIsOpen: true, id: props._id, action: "Delete", modalType: "information" })}
+      style={{ background: "tan" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaTrash />
+    </button>
+  )
+};
+
+export const updateInfo = (props) => {
+  const { setAppointmentModal, setConfirm } = useStateContext();
+  return (
+    <button
+      type="button"
+      onClick={() => { setAppointmentModal({ isOpen: true }); setConfirm({ action: "Update", modalType: "information", id: props._id }) }}
+      style={{ background: "purple" }}
+      className="text-white py-2 px-3 capitalize rounded-2xl text-md"
+    >
+      <FaEdit />
+    </button>
+  )
+};
+export const informationGrid = [
+  {
+    headerText: 'User',
+    width: '150',
+    template: gridInfoDetails,
+    textAlign: 'Center'
+  },
+  {
+    field: '_id',
+    headerText: 'ID',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+  },
+  {
+    headerText: 'Image',
+    template: gridOrderImage,
+    textAlign: 'Center',
+    width: '120',
+  },
+  {
+    field: 'title',
+    headerText: 'Title',
+    width: '120',
+    textAlign: 'Center',
+    hight: '200',
+  },
+  {
+    field: 'body',
+    headerText: 'Body',
+    width: '150',
+    hight: '200',
+  },
+  {
+    field: 'contentType',
+    headerText: 'Type',
+    width: '150',
+    hight: '200',
+  },
+  {
+    field: 'postDate',
+    headerText: 'postDate',
+    format: 'C2',
+    textAlign: 'Center',
+    editType: 'numericedit',
+    width: '150',
+    hight: '200',
+  },
+  {
+    headerText: 'Delete',
+    width: '80',
+    template: deleteInfo,
+    textAlign: 'Center'
+  },
+  {
+    headerText: 'Update',
+    width: '80',
+    template: updateInfo,
+    textAlign: 'Center'
+  }
+];
+
+// 
+
+// ########################################################################
+
+
+
+
 export const kanbanGrid = [
-  { headerText: 'To Do',
+  {
+    headerText: 'To Do',
     keyField: 'Open',
-    allowToggle: true },
+    allowToggle: true
+  },
 
-  { headerText: 'In Progress',
+  {
+    headerText: 'In Progress',
     keyField: 'InProgress',
-    allowToggle: true },
+    allowToggle: true
+  },
 
-  { headerText: 'Testing',
+  {
+    headerText: 'Testing',
     keyField: 'Testing',
     allowToggle: true,
-    isExpanded: false },
+    isExpanded: false
+  },
 
-  { headerText: 'Done',
+  {
+    headerText: 'Done',
     keyField: 'Close',
-    allowToggle: true },
+    allowToggle: true
+  },
 ];
 const gridEmployeeProfile = (props) => (
   <div className="flex items-center gap-2">
@@ -323,20 +735,26 @@ export const colorMappingData = [
 ];
 
 export const rangeColorMapping = [
-  { label: '1°C to 10°C',
+  {
+    label: '1°C to 10°C',
     start: '1',
     end: '10',
-    colors: colorMappingData[1] },
+    colors: colorMappingData[1]
+  },
 
-  { label: '11°C to 20°C',
+  {
+    label: '11°C to 20°C',
     start: '11',
     end: '20',
-    colors: colorMappingData[2] },
+    colors: colorMappingData[2]
+  },
 
-  { label: '21°C to 30°C',
+  {
+    label: '21°C to 30°C',
     start: '21',
     end: '30',
-    colors: colorMappingData[3] },
+    colors: colorMappingData[3]
+  },
 
 ];
 
@@ -393,38 +811,50 @@ export const LinePrimaryYAxis = {
 
 export const customersGrid = [
   { type: 'checkbox', width: '50' },
-  { headerText: 'Name',
+  {
+    headerText: 'Name',
     width: '150',
     template: customerGridImage,
-    textAlign: 'Center' },
-  { field: 'ProjectName',
+    textAlign: 'Center'
+  },
+  {
+    field: 'ProjectName',
     headerText: 'Project Name',
     width: '150',
-    textAlign: 'Center' },
-  { field: 'Status',
+    textAlign: 'Center'
+  },
+  {
+    field: 'Status',
     headerText: 'Status',
     width: '130',
     format: 'yMd',
     textAlign: 'Center',
-    template: customerGridStatus },
+    template: customerGridStatus
+  },
   {
     field: 'Weeks',
     headerText: 'Weeks',
     width: '100',
     format: 'C2',
-    textAlign: 'Center' },
-  { field: 'Budget',
+    textAlign: 'Center'
+  },
+  {
+    field: 'Budget',
     headerText: 'Budget',
     width: '100',
     format: 'yMd',
-    textAlign: 'Center' },
+    textAlign: 'Center'
+  },
 
-  { field: 'Location',
+  {
+    field: 'Location',
     headerText: 'Location',
     width: '150',
-    textAlign: 'Center' },
+    textAlign: 'Center'
+  },
 
-  { field: 'CustomerID',
+  {
+    field: 'CustomerID',
     headerText: 'Customer ID',
     width: '120',
     textAlign: 'Center',
@@ -433,41 +863,7 @@ export const customersGrid = [
 
 ];
 
-export const employeesGrid = [
-  { headerText: 'Employee',
-    width: '150',
-    template: gridEmployeeProfile,
-    textAlign: 'Center' },
-  { field: 'Name',
-    headerText: '',
-    width: '0',
-    textAlign: 'Center',
-  },
-  { field: 'Title',
-    headerText: 'Designation',
-    width: '170',
-    textAlign: 'Center',
-  },
-  { headerText: 'Country',
-    width: '120',
-    textAlign: 'Center',
-    template: gridEmployeeCountry },
 
-  { field: 'HireDate',
-    headerText: 'Hire Date',
-    width: '135',
-    format: 'yMd',
-    textAlign: 'Center' },
-
-  { field: 'ReportsTo',
-    headerText: 'Reports To',
-    width: '120',
-    textAlign: 'Center' },
-  { field: 'EmployeeID',
-    headerText: 'Employee ID',
-    width: '125',
-    textAlign: 'Center' },
-];
 
 export const links = [
   {
@@ -484,16 +880,20 @@ export const links = [
     title: 'Pages',
     links: [
       {
-        name: 'appointments',
-        icon: <AiOutlineShoppingCart />,
+        name: 'properties',
+        icon: <FaBuilding />,
       },
       {
-        name: 'employees',
+        name: 'users',
         icon: <IoMdContacts />,
       },
       {
-        name: 'customers',
-        icon: <RiContactsLine />,
+        name: 'appointments',
+        icon: <CgHello />,
+      },
+      {
+        name: 'Informations',
+        icon: <FaRegNewspaper />,
       },
     ],
   },
@@ -501,60 +901,17 @@ export const links = [
     title: 'Apps',
     links: [
       {
-        name: 'calendar',
-        icon: <AiOutlineCalendar />,
+        name: 'notifications-Ads',
+        icon: <FiMessageSquare />,
       },
       {
-        name: 'kanban',
-        icon: <BsKanban />,
-      },
-      {
-        name: 'editor',
-        icon: <FiEdit />,
-      },
-      {
-        name: 'color-picker',
-        icon: <BiColorFill />,
+        name: 'saved-Properties',
+        icon: <FiSave />,
       },
     ],
   },
   {
-    title: 'Charts',
-    links: [
-      {
-        name: 'line',
-        icon: <AiOutlineStock />,
-      },
-      {
-        name: 'area',
-        icon: <AiOutlineAreaChart />,
-      },
 
-      {
-        name: 'bar',
-        icon: <AiOutlineBarChart />,
-      },
-      {
-        name: 'pie',
-        icon: <FiPieChart />,
-      },
-      {
-        name: 'financial',
-        icon: <RiStockLine />,
-      },
-      {
-        name: 'color-mapping',
-        icon: <BsBarChart />,
-      },
-      {
-        name: 'pyramid',
-        icon: <GiLouvrePyramid />,
-      },
-      {
-        name: 'stacked',
-        icon: <AiOutlineBarChart />,
-      },
-    ],
   },
 ];
 
@@ -870,54 +1227,7 @@ export const userProfileData = [
   },
 ];
 
-export const ordersGrid = [
-  {
-    headerText: 'Image',
-    template: gridOrderImage,
-    textAlign: 'Center',
-    width: '120',
-  },
-  {
-    field: 'OrderItems',
-    headerText: 'Item',
-    width: '150',
-    editType: 'dropdownedit',
-    textAlign: 'Center',
-  },
-  { field: 'CustomerName',
-    headerText: 'Customer Name',
-    width: '150',
-    textAlign: 'Center',
-  },
-  {
-    field: 'TotalAmount',
-    headerText: 'Total Amount',
-    format: 'C2',
-    textAlign: 'Center',
-    editType: 'numericedit',
-    width: '150',
-  },
-  {
-    headerText: 'Status',
-    template: gridOrderStatus,
-    field: 'OrderItems',
-    textAlign: 'Center',
-    width: '120',
-  },
-  {
-    field: 'OrderID',
-    headerText: 'Order ID',
-    width: '120',
-    textAlign: 'Center',
-  },
 
-  {
-    field: 'Location',
-    headerText: 'Location',
-    width: '150',
-    textAlign: 'Center',
-  },
-];
 
 export const customersData = [
   {
@@ -1490,7 +1800,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar3,
+      avatar3,
   },
   {
     EmployeeID: 2,
@@ -1560,7 +1870,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -1631,7 +1941,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar,
+      avatar,
   },
   {
     EmployeeID: 2,
@@ -1701,7 +2011,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -1772,7 +2082,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -1843,7 +2153,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -1914,7 +2224,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -1985,7 +2295,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -2056,7 +2366,7 @@ export const employeesData = [
     Country: 'USA',
     ReportsTo: 'Carson',
     EmployeeImage:
-    avatar2,
+      avatar2,
 
   },
   {
@@ -2176,7 +2486,7 @@ export const ordersData = [
     Status: 'rejected',
     StatusBg: 'red',
     ProductImage:
-    product1,
+      product1,
   },
   {
     OrderID: 94757,
@@ -3092,29 +3402,35 @@ export const SparklineAreaData = [
 ];
 
 export const lineCustomSeries = [
-  { dataSource: lineChartData[0],
+  {
+    dataSource: lineChartData[0],
     xName: 'x',
     yName: 'y',
     name: 'Germany',
     width: '2',
     marker: { visible: true, width: 10, height: 10 },
-    type: 'Line' },
+    type: 'Line'
+  },
 
-  { dataSource: lineChartData[1],
+  {
+    dataSource: lineChartData[1],
     xName: 'x',
     yName: 'y',
     name: 'England',
     width: '2',
     marker: { visible: true, width: 10, height: 10 },
-    type: 'Line' },
+    type: 'Line'
+  },
 
-  { dataSource: lineChartData[2],
+  {
+    dataSource: lineChartData[2],
     xName: 'x',
     yName: 'y',
     name: 'India',
     width: '2',
     marker: { visible: true, width: 10, height: 10 },
-    type: 'Line' },
+    type: 'Line'
+  },
 
 ];
 
@@ -3177,7 +3493,8 @@ export const stackedChartData = [
 
 export const stackedCustomSeries = [
 
-  { dataSource: stackedChartData[0],
+  {
+    dataSource: stackedChartData[0],
     xName: 'x',
     yName: 'y',
     name: 'Budget',
@@ -3186,7 +3503,8 @@ export const stackedCustomSeries = [
 
   },
 
-  { dataSource: stackedChartData[1],
+  {
+    dataSource: stackedChartData[1],
     xName: 'x',
     yName: 'y',
     name: 'Expense',

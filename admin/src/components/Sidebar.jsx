@@ -5,16 +5,17 @@ import { MdOutlineCancel } from 'react-icons/md'
 import { TooltipComponent } from '@syncfusion/ej2-react-popups'
 import { links } from '../data/dummy'
 import { useStateContext } from '../contexts/ContextProvider'
+import { useAuth } from '../contexts/AuthContext'
 
 
 const Sidebar = () => {
-  const {activeMenu, setActiveMenu, screenSize} = useStateContext()
-  const activeLink = 'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg  text-white bg-green text-md m-2';
+  const { logout } = useAuth();
+  const { activeMenu, setActiveMenu, screenSize } = useStateContext()
+  const activeLink = 'flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg  text-white bg-green-500 text-md m-2';
   const normalLink = 'text-black flex items-center gap-5 pl-4 pt-3 pb-2.5 rounded-lg text-md text-gray-700 dark:text-gray-200 dark:hover:text-black hover:bg-light-gray m-2';
 
-  const handleCloseSideBar  = () => {
-    if(activeMenu && screenSize <= 900)
-    {
+  const handleCloseSideBar = () => {
+    if (activeMenu && screenSize <= 900) {
       setActiveMenu(false)
     }
   }
@@ -25,30 +26,30 @@ const Sidebar = () => {
           <Link to='/' onClick={handleCloseSideBar} className='items-center gap-3 ml-3 mt-4 flex text-xl font-extrabold tracking-tight dark:text-white text-slate-900'>
             <SiShopware /><span>Abhom</span>
           </Link>
-           <TooltipComponent content="Menu" position="BottomCenter"> 
-          <button
-                type="button"
-                onClick={() => setActiveMenu((prev) => !prev)}
-                className="text-xl rounded-full p-3 hover:bg-light-gray mt-4 block md:hidden"
-              >
-                <MdOutlineCancel />
-              </button>
-           </TooltipComponent> 
+          <TooltipComponent content="Menu" position="BottomCenter">
+            <button
+              type="button"
+              onClick={() => setActiveMenu((prev) => !prev)}
+              className="text-xl rounded-full p-3 hover:bg-light-gray mt-4 block md:hidden"
+            >
+              <MdOutlineCancel />
+            </button>
+          </TooltipComponent>
         </div>
         <div className='mt-10'>
           {links.map((item) => (
-            <div key={item.title}>
+            <div key={item?.title}>
               <p className='text-gray-400 m-3 mt-4 uppercase'>
                 {item.title}
               </p>
-              {item.links.map((link) => (
+              {item?.links?.map((link) => (
                 <NavLink
-                 to={`/${link.name}`}
-                 key={link.name}
-                 onClick={handleCloseSideBar}
-                 className={({ isActive }) => 
-                  isActive ? activeLink : normalLink
-                }
+                  to={`/${link?.name}`}
+                  key={link?.name}
+                  onClick={handleCloseSideBar}
+                  className={({ isActive }) =>
+                    isActive ? activeLink : normalLink
+                  }
                 >
                   {link.icon}
                   <span className="capitalize text-grey">{link.name}</span>
@@ -57,8 +58,17 @@ const Sidebar = () => {
             </div>
           ))}
         </div>
-        </>)}
-    </div>
+        <button
+          type="button"
+          onClick={logout}
+          style={{ background: "red" }}
+          className="text-white py-1 px-4 ml-10 mt-10 capitalize rounded-2xl text-md"
+        >
+          Log Out
+        </button>
+      </>)
+      }
+    </div >
   )
 }
 

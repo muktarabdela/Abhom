@@ -57,6 +57,11 @@ const userSchema = new mongoose.Schema({
     deviceToken: {
         type: String,
         default: "fcbFL6qAQSCvszi5rfJKW9:APA91bHXmBrt_C3VAS0jo9NgsgSL2yFR5nzfU33KgF-fDf-KRFGFaGcfwfTEzC3V45HHzW4iunepUnaM-nEvLD7Xhevf4PGNCKjK-GtvTwRMyfNZ36ryHDXXq2QQkgFNiDrPLyv08Nqe"
+    },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
     }
 });
 
@@ -67,7 +72,7 @@ userSchema.pre('save', async function () {
 });
 
 userSchema.methods.createJWT = function () {
-    return jwt.sign({ userID: this._id, username: this.username }, process.env.JWT_SECRET, {
+    return jwt.sign({ userID: this._id, username: this.username, role: 'user' }, process.env.JWT_SECRET, {
         expiresIn: process.env.JWT_LIFETIME,
     })
 }

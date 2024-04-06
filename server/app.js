@@ -13,7 +13,7 @@ const favoriteRoutes = require('./Routes/favorites')
 const informationsRoutes = require('./Routes/information')
 const searchRoute = require('./Routes/search')
 const adNotificationRoute = require('./Routes/adNotifications')
-
+const adminUserRoute = require('./Routes/admin')
 
 // middleware
 const errorHandlerMiddleware = require('./Middleware/errorHandler')
@@ -28,8 +28,8 @@ const rateLimiter = require('express-rate-limit')
 
 app.set('trust proxy', 1)
 app.use(rateLimiter({
-	windowMs: 15 * 60 * 1000, // 15 minutes
-	limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+    windowMs: 15 * 60 * 1000, // 15 minutes
+    limit: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
 }))
 app.use(express.json());
 app.use(helmet())
@@ -42,6 +42,7 @@ app.get('/', (req, res) => {
 })
 
 //routes
+app.use('/abhom-api/v1/', adminUserRoute)
 app.use('/abhom-api/v1', authRouters)
 app.use('/abhom-api/v1', authMiddleware, propertyRoutes)
 app.use('/abhom-api/v1', authMiddleware, appointmentRouters)
