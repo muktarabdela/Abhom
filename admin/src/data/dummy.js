@@ -365,11 +365,11 @@ export const deleteInfo = (props) => {
 };
 
 export const updateInfo = (props) => {
-  const { setAppointmentModal, setConfirm } = useStateContext();
+  const { setInfoModal, setConfirm } = useStateContext();
   return (
     <button
       type="button"
-      onClick={() => { setAppointmentModal({ isOpen: true }); setConfirm({ action: "Update", modalType: "information", id: props._id }) }}
+      onClick={() => { setInfoModal({ isOpen: true }); setConfirm({ action: "Update", modalType: "information", id: props._id, data: props }) }}
       style={{ background: "purple" }}
       className="text-white py-2 px-3 capitalize rounded-2xl text-md"
     >

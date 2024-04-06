@@ -2,16 +2,14 @@ import React, { useState } from 'react';
 import { useStateContext } from '../../contexts/ContextProvider';
 import { deleteAppointment, updateAppointment } from '../../api/appointmentApi'
 import { deleteProperty, updateProperty, addPropertyApi } from '../../api/propertyApi';
-import { createInformation, deleteInformation } from '../../api/informationApi';
+import { createInformation, deleteInformation, updateInformation } from '../../api/informationApi';
 import { useNavigate } from 'react-router-dom';
 
 
 const ConfirmationBox = () => {
   const navigate = useNavigate();
 
-  const { confirm, setConfirm, appointmentModal, PropertyModal, AddPropertyModal, AddInfoModal } = useStateContext();
-  console.log(confirm)
-  console.log(AddInfoModal)
+  const { confirm, setConfirm, appointmentModal, PropertyModal, AddPropertyModal, AddInfoModal, setInfoModal, infoModal } = useStateContext();
   const [isLoading, setIsLoading] = useState(false)
   const content = confirm.modalType
   const action = confirm.action
@@ -62,9 +60,18 @@ const ConfirmationBox = () => {
         navigate('/informations')
         window.location.reload()
       }
+      else if (content === "information" && action === "Update") {
+        setIsLoading(true)
+        const response = await updateInformation(infoModal.updateBody, confirm.id)
+        console.log(response)
+        setIsLoading(false)
+        setConfirm({ modalIsOpen: false })
+        window.location.reload()
+      }
       else if (content === "information" && action === "Delete") {
         setIsLoading(true)
         const response = await deleteInformation(confirm.id)
+        console.log(response)
         setIsLoading(false)
         setConfirm({ modalIsOpen: false })
         window.location.reload()

@@ -95,14 +95,19 @@ const UpdateProperty = async (req, res) => {
 const DeleteProperty = async (req, res) => {
     if (req.user.role === 'admin') {
         try {
-            const property = await propertySchema.findByIdAndDelete(req.params.id);
             const appointment = await UserAppointment.findByIdAndDelete(req.params.id);
             const favourite = await FavoriteProperty.findByIdAndDelete(req.params.id);
+            const property = await propertySchema.findByIdAndDelete(req.params.id);
 
-            if (property && appointment && favourite) {
+            if (property) {
                 res.status(StatusCodes.OK).json({ requestingUser: req.user, message: 'Property deleted successfully', property });
             } else {
-                res.status(StatusCodes.NOT_FOUND).json({ error: 'Property not found' });
+                // Check if any of the documents exist and send appropriate response
+                if (appointment || favourite) {
+                    res.status(StatusCodes.OK).json({ requestingUser: req.user, message: 'Property deleted successfully', property: null });
+                } else {
+                    res.status(StatusCodes.NOT_FOUND).json({ error: 'Property not found' });
+                }
             }
         } catch (error) {
             console.error(error);

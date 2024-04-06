@@ -11,7 +11,7 @@ const NewsFields = ({ formData, handleChange, handleImageChange }) => {
                     value={formData.title}
                     onChange={handleChange}
                     placeholder="Title"
-                    required
+
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 />
             </div>
@@ -22,7 +22,7 @@ const NewsFields = ({ formData, handleChange, handleImageChange }) => {
                     value={formData.body}
                     onChange={handleChange}
                     placeholder="Body"
-                    required
+
                     className="mt-1 p-2 border border-gray-300 rounded-md w-full focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                 ></textarea>
             </div>

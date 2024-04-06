@@ -28,13 +28,16 @@ export const ContextProvider = ({ children }) => {
     const [user, setUser] = useState({ isOpen: false, modalId: "" })
 
     //confirmation state to confirm to delete or update data
-    const [confirm, setConfirm] = useState({ modalIsOpen: false, modalType: 'data', action: "", isConfirmed: false, id: "" })
+    const [confirm, setConfirm] = useState({ modalIsOpen: false, modalType: 'data', action: "", isConfirmed: false, id: "", data: {} })
 
     //Property Modal to show details of appointed properties
     const [property, setProperty] = useState({ isOpen: false, propertyId: "" })
 
     //Property Modal to show details of appointed properties
     const [info, setInfo] = useState({ isOpen: false, infoId: "" })
+
+    //Property Modal to show details of appointed properties
+    const [infoModal, setInfoModal] = useState({ isOpen: false, updateBody: {} })
     //Property Modal to show details of saved property
     const [savedProperty, setSavedProperty] = useState({ isOpen: false, details: {} })
     //users Modal to show list of users who save a property
@@ -60,6 +63,7 @@ export const ContextProvider = ({ children }) => {
                 setPropertyModal, PropertyModal,
                 AddPropertyModal, setAddPropertyModal,
                 info, setInfo,
+                infoModal, setInfoModal,
                 AddInfoModal, setAddInfoModal,
                 usersSaved, setUsersSaved, savedProperty,
                 result, setResult, setSavedProperty

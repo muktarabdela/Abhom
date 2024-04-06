@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStateContext } from '../../contexts/ContextProvider';
 import ConfirmationBox from './confirmationBox';
+import Axios from 'axios';
 
 const UpdateProperty = () => {
     const { PropertyModal, setPropertyModal, setConfirm, confirm } = useStateContext()
@@ -42,11 +43,24 @@ const UpdateProperty = () => {
         setFormData({ ...formData, images: e.target.files });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const uploadedImageUrls = [];
+        for (let i = 0; i < formData.images.length; i++) {
+            const formDataCloudinary = new FormData();
+            formDataCloudinary.append('file', formData.images[i]);
+            formDataCloudinary.append('upload_preset', 'images');
+            const response = await Axios.post('https://api.cloudinary.com/v1_1/do7kscbrk/image/upload', formDataCloudinary);
+            // console.log(response);
+            uploadedImageUrls.push(response.data.secure_url);
+        }
+        const formDataWithImageUrls = {
+            ...formData,
+            images: uploadedImageUrls
+        };
         //submission logic 
         setPropertyModal({ isOpen: false })
-        setPropertyModal({ updateBody: formData })
+        setPropertyModal({ updateBody: formDataWithImageUrls })
         setConfirm({ modalIsOpen: true, action: "Update", modalType: "property", id: confirm.id })
     };
 

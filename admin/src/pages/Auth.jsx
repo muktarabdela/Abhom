@@ -10,6 +10,7 @@ const Auth = () => {
         username: '',
         password: ''
     });
+    const [error, setError] = useState(null);
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
@@ -23,6 +24,7 @@ const Auth = () => {
 
         } catch (error) {
             console.error('Error logging in:', error);
+            setError('Invalid username or password');
         }
     }
 
@@ -35,6 +37,8 @@ const Auth = () => {
                             <h1 className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl dark:text-white">
                                 Sign in to your account
                             </h1>
+                            <p className="text-sm font-medium text-red-500">{error}</p>
+
                             <form className="space-y-4 md:space-y-6" action="#" onSubmit={handleSubmit}>
                                 <div>
                                     <label

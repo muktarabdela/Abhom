@@ -20,15 +20,15 @@ const App = () => {
   const { isAuthenticated, checkAuth } = useAuth();
   const navigate = useNavigate();
 
-  // Check authentication status when component mounts
-  useEffect(() => {
-    checkAuth().then(authenticated => {
-      if (authenticated) {
-        // Navigate to the dashboard or any other page
-        navigate('/dashboard');
-      }
-    });
-  }, [checkAuth]);
+  // // Check authentication status when component mounts
+  // useEffect(() => {
+  //   checkAuth().then(authenticated => {
+  //     if (authenticated) {
+  //       // Navigate to the dashboard or any other page
+  //       navigate('/dashboard');
+  //     }
+  //   });
+  // }, [checkAuth]);
   return (
     <div>
       <Routes>
@@ -62,8 +62,6 @@ const App = () => {
 
           <div>
             <Routes>
-              <Route path="/auth" element={<Auth />} />
-              {/* Public routes */}
 
               {/* Protected admin routes */}
 

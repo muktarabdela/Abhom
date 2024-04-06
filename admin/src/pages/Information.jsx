@@ -6,9 +6,9 @@ import { contextMenuItems, informationGrid } from '../data/dummy';
 import { getInformation } from '../api/informationApi';
 import { useStateContext } from '../contexts/ContextProvider';
 import InfoDetail from '../components/Modals/InfoDetail';
-
+import InfoUpdate from "../components/Modals/InfoUpdate"
 const Information = () => {
-  const { info, setInfo, confirm } = useStateContext()
+  const { info, infoModal, confirm } = useStateContext()
   const [information, setInformation] = useState([]);
   const editing = { allowDeleting: true, allowEditing: true };
 
@@ -39,6 +39,7 @@ const Information = () => {
         </Link>
       </div>
       {info?.isOpen && <InfoDetail infoId={info.infoId} />}
+      {infoModal?.isOpen && <InfoUpdate infoId={info.infoId} />}
       {confirm.modalIsOpen && <ConfirmationBox />}
 
       <GridComponent

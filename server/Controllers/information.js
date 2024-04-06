@@ -23,7 +23,6 @@ const createInformation = async (req, res) => {
     }
 }
 const getInformation = async (req, res) => {
-
     try {
         const { contentType, title, postDate } = req.query
         const queryObject = {}

@@ -1,11 +1,14 @@
 import React, { useEffect } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext'; // Assuming you have an auth context/provider
+import { useAuth } from '../contexts/AuthContext';
 
-const PrivateRoute = ({ element, Component }) => {
-    const { isAuthenticated, checkAuth } = useAuth();
-    console.log(isAuthenticated)
-    return isAuthenticated ? <Component /> : <Navigate to="/auth" />;
+const PrivateRoute = ({ Component }) => {
+    const { isAuthenticated } = useAuth();
+    const token = localStorage.getItem('token');
+    // Check if the token is valid
+    const isValidToken = typeof token === 'string' && token.length > 0;
+
+    return isValidToken ? <Component /> : <Navigate to="/auth" />;
 
 };
 
