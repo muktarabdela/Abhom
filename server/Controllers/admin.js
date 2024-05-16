@@ -32,8 +32,8 @@ const adminLogin = async (req, res, next) => {
         // Generate JWT token
         const token = adminUser.createJWT();
         res.status(200).json({ success: true, admin: adminUser, token: token });
-
     } catch (error) {
+        // console.log(error)
 
     }
 }
