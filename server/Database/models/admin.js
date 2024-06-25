@@ -43,7 +43,7 @@ AdminSchema.pre('save', async function () {
 
 AdminSchema.methods.createJWT = function () {
     return jwt.sign({ userID: this._id, username: this.username, role: 'admin' }, process.env.JWT_SECRET, {
-        expiresIn: process.env.JWT_LIFETIME,
+        expiresIn: 10,
     })
 }
 
